@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fried Chips Menu</title>
+  <!-- Load CSS from static -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='Kota.css') }}">
+</head>
+<body>
+
+  <header class="menu-header">
+    <h1>Fried Chips Menu</h1>
+    <nav>
+  <ul>
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('kota') }}">Kota</a></li>
+    <li><a href="{{ url_for('chips') }}">Chips</a></li>
+    <li><a href="{{ url_for('orders') }}">Orders</a></li>
+    <li><a href="{{ url_for('cart') }}">Cart</a></li>
+
+    <li class="auth-group">
+      {% if session.get("user_id") %}
+        <a href="{{ url_for('logout') }}" class="auth">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="auth">Login</a>
+        <a href="{{ url_for('register') }}" class="auth signup">Register</a>
+      {% endif %}
+    </li>
+  </ul>
+</nav>
+
+  </header>
+
+  <section class="kota-list">
+    <article>
+      <h2>Cheese Kota</h2>
+      <img src="{{ url_for('static', filename='images/FlyingKota1.jpg') }}" alt="Cheese Kota">
+      <p>Price: R25</p>
+      <p>Description: Fresh bread filled with melted cheese.</p>
+      <form action="{{ url_for('place_order') }}" method="POST">
+        <input type="hidden" name="items" value="Cheese Kota">
+        <button type="submit">Add to Cart</button>
+      </form>
+    </article>
+
+    <article>
+      <h2>Russian Kota</h2>
+      <img src="{{ url_for('static', filename='images/FlyingKota1.jpg') }}" alt="Russian Kota">
+      <p>Price: R35</p>
+      <p>Description: Kota stuffed with a juicy Russian sausage and chips.</p>
+      <form action="{{ url_for('place_order') }}" method="POST">
+        <input type="hidden" name="items" value="Russian Kota">
+        <button type="submit">Add to Cart</button>
+      </form>
+    </article>
+
+    <article>
+      <h2>Egg Kota</h2>
+      <img src="{{ url_for('static', filename='images/FlyingKota1.jpg') }}" alt="Egg Kota">
+      <p>Price: R40</p>
+      <p>Description: Kota filled with fried egg, chips, and sauce.</p>
+      <form action="{{ url_for('place_order') }}" method="POST">
+        <input type="hidden" name="items" value="Egg Kota">
+        <button type="submit">Add to Cart</button>
+      </form>
+    </article>
+
+    <article>
+      <h2>Cheese & Russian Kota</h2>
+      <img src="{{ url_for('static', filename='images/FlyingKota1.jpg') }}" alt="Cheese and Russian Kota">
+      <p>Price: R50</p>
+      <p>Description: Kota packed with melted cheese and Russian sausage.</p>
+      <form action="{{ url_for('place_order') }}" method="POST">
+        <input type="hidden" name="items" value="Cheese & Russian Kota">
+        <button type="submit">Add to Cart</button>
+      </form>
+    </article>
+
+    <article>
+      <h2>Deluxe Kota</h2>
+      <img src="{{ url_for('static', filename='images/FlyingKota1.jpg') }}" alt="Deluxe Kota">
+      <p>Price: R70</p>
+      <p>Description: A big kota with cheese, Russian, egg, and extra chips.</p>
+      <form action="{{ url_for('place_order') }}" method="POST">
+        <input type="hidden" name="items" value="Deluxe Kota">
+        <button type="submit">Add to Cart</button>
+      </form>
+    </article>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Nkosana’s Kota Shop</p>
+    <p>Contact: <a href="mailto:info@kotashop.com">info@kotashop.com</a></p>
+    <div class="social-links">
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+      <a href="#">Twitter</a>
+    </div>
+  </footer>
+
+</body>
+</html>

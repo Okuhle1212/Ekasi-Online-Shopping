@@ -1,0 +1,162 @@
+:root {
+  --primary-color: #E50914;   /* Coca-Cola red */
+  --secondary-color: #28A745; /* Sprite green */
+  --accent-color: #FFD54F;    /* golden chips */
+  --background-color: #F5F5DC;/* warm beige */
+  --text-color: #333333;      /* dark gray */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.menu-header {
+  padding: 20px;
+  color: white;
+  background-image: url("logo.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.menu-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+}
+
+/* Navigation */
+nav {
+  background-color: var(--primary-color);
+  padding: 10px 20px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px 15px;
+  transition: background 0.3s;
+}
+
+nav a:hover {
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+}
+
+.auth-group {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.auth.signup {
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+}
+
+/* Orders styling */
+.orders {
+  padding: 20px;
+}
+
+.order-card {
+  background: white;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.order-card h3 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.pending .status {
+  background: var(--accent-color);
+  color: black;
+}
+
+.ready .status {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.completed .status {
+  background: grey;
+  color: white;
+}
+
+.cancel-btn, .reorder-btn {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.cancel-btn:hover, .reorder-btn:hover {
+  background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+}
+
+/* Footer */
+footer {
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 20px 10px;
+  margin-top: 40px;
+}
+
+footer a {
+  color: var(--accent-color);
+  text-decoration: none;
+  margin: 0 10px;
+  transition: color 0.3s;
+}
+
+footer a:hover {
+  color: var(--secondary-color);
+}
+
+footer .social-links {
+  margin-top: 10px;
+}
+
+footer .social-links a {
+  display: inline-block;
+  background: var(--secondary-color);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin: 0 5px;
+  transition: background 0.3s;
+}
+
+footer .social-links a:hover {
+  background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+}

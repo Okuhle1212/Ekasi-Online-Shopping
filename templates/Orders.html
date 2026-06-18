@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orders - Ekasi Online Shopping</title>
+  <link rel="stylesheet" href="Orders.css">
+</head>
+<body>
+
+  <header class="menu-header">
+    <h1>My Orders</h1>
+    <nav>
+      <ul>
+        <li><a href="Home.html">Home</a></li>
+        <li><a href="Kota.html">Kota</a></li>
+        <li><a href="Chips.html">Chips</a></li>
+        <li><a href="Orders.html">Orders</a></li>
+        <li><a href="Cart.html">Cart</a></li>
+        <li class="auth-group">
+          <a href="Login.html" class="auth">Login</a>
+          <a href="Register.html" class="auth signup">Register</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="orders">
+    <h2>Active Orders</h2>
+    <div class="order-card pending">
+      <h3>Order #101</h3>
+      <p>Items: Cheese Kota, Chips</p>
+      <span class="status">Pending</span>
+      <button class="cancel-btn">Cancel</button>
+    </div>
+
+    <div class="order-card ready">
+      <h3>Order #102</h3>
+      <p>Items: Russian Kota</p>
+      <span class="status">Ready for Collection</span>
+    </div>
+
+    <h2>Previous Orders</h2>
+    <div class="order-card completed">
+      <h3>Order #099</h3>
+      <p>Items: Egg Kota</p>
+      <span class="status">Completed</span>
+      <button class="reorder-btn">Reorder</button>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Nkosana’s Kota Shop</p>
+    <p>Contact: <a href="mailto:info@kotashop.com">info@kotashop.com</a></p>
+    <div class="social-links">
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+      <a href="#">Twitter</a>
+    </div>
+  </footer>
+
+</body>
+</html>

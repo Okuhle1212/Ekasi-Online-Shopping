@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Ekasi Online Shopping</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Login & Register.css') }}">
+</head>
+<body>
+
+  <header class="menu-header">
+    <h1>Login</h1>
+    <nav>
+  <ul>
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('kota') }}">Kota</a></li>
+    <li><a href="{{ url_for('chips') }}">Chips</a></li>
+    <li><a href="{{ url_for('orders') }}">Orders</a></li>
+    <li><a href="{{ url_for('cart') }}">Cart</a></li>
+
+    <li class="auth-group">
+      {% if session.get("user_id") %}
+        <a href="{{ url_for('logout') }}" class="auth">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="auth">Login</a>
+        <a href="{{ url_for('register') }}" class="auth signup">Register</a>
+      {% endif %}
+    </li>
+  </ul>
+</nav>
+
+  </header>
+
+  <section class="auth-form">
+    <h2>Welcome Back</h2>
+    <!-- Form posts to Flask /login route -->
+    <form action="{{ url_for('login') }}" method="POST">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="Enter your email" required>
+
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Enter your password" required>
+
+      <div class="remember-forgot">
+        <label>
+          <input type="checkbox" name="remember"> Remember Me
+        </label>
+        <a href="#">Forgot Password?</a>
+      </div>
+
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+    <p>Don’t have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Nkosana’s Kota Shop</p>
+  </footer>
+
+</body>
+</html>
