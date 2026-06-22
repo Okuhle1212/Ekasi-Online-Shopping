@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Orders - Ekasi Online Shopping</title>
-  <link rel="stylesheet" href="Orders.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='Orders.css') }}">
 </head>
 <body>
 
@@ -11,14 +11,17 @@
     <h1>My Orders</h1>
     <nav>
       <ul>
-        <li><a href="Home.html">Home</a></li>
-        <li><a href="Kota.html">Kota</a></li>
-        <li><a href="Chips.html">Chips</a></li>
-        <li><a href="Orders.html">Orders</a></li>
-        <li><a href="Cart.html">Cart</a></li>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('kota') }}">Kota</a></li>
+        <li><a href="{{ url_for('chips') }}">Chips</a></li>
+        <li><a href="{{ url_for('orders') }}">Orders</a></li>
+        <li><a href="{{ url_for('cart') }}">Cart</a></li>
         <li class="auth-group">
-          <a href="Login.html" class="auth">Login</a>
-          <a href="Register.html" class="auth signup">Register</a>
+          {% if session.get("user_id") %}
+            <a href="{{ url_for('logout') }}" class="auth">Logout</a>
+          {% else %}
+            <a href="{{ url_for('login') }}" class="auth">Login</a>
+          {% endif %}
         </li>
       </ul>
     </nav>
@@ -26,26 +29,45 @@
 
   <section class="orders">
     <h2>Active Orders</h2>
-    <div class="order-card pending">
-      <h3>Order #101</h3>
-      <p>Items: Cheese Kota, Chips</p>
-      <span class="status">Pending</span>
-      <button class="cancel-btn">Cancel</button>
-    </div>
 
-    <div class="order-card ready">
-      <h3>Order #102</h3>
-      <p>Items: Russian Kota</p>
-      <span class="status">Ready for Collection</span>
-    </div>
+    {% set ns = namespace(has_active=false) %}
+    {% for order in orders %}
+      {% if order['status'] in ['Pending', 'Ready'] %}
+        {% set ns.has_active = true %}
+        <div class="order-card {% if order['status'] == 'Pending' %}pending{% else %}ready{% endif %}">
+          <h3>Order #{{ order['id'] }}</h3>
+          <p>Items: {{ order['items'] }}</p>
+          <span class="status">
+            {% if order['status'] == 'Ready' %}Ready for Collection{% else %}{{ order['status'] }}{% endif %}
+          </span>
+          {% if order['status'] == 'Pending' %}
+            <form action="{{ url_for('cancel_order', order_id=order['id']) }}" method="POST">
+              <button type="submit" class="cancel-btn">Cancel</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+    {% if not ns.has_active %}
+      <p>No active orders.</p>
+    {% endif %}
 
     <h2>Previous Orders</h2>
-    <div class="order-card completed">
-      <h3>Order #099</h3>
-      <p>Items: Egg Kota</p>
-      <span class="status">Completed</span>
-      <button class="reorder-btn">Reorder</button>
-    </div>
+
+    {% set ns = namespace(has_previous=false) %}
+    {% for order in orders %}
+      {% if order['status'] not in ['Pending', 'Ready'] %}
+        {% set ns.has_previous = true %}
+        <div class="order-card completed">
+          <h3>Order #{{ order['id'] }}</h3>
+          <p>Items: {{ order['items'] }}</p>
+          <span class="status">{{ order['status'] }}</span>
+        </div>
+      {% endif %}
+    {% endfor %}
+    {% if not ns.has_previous %}
+      <p>No previous orders.</p>
+    {% endif %}
   </section>
 
   <footer>

@@ -22,7 +22,6 @@
         <a href="{{ url_for('logout') }}" class="auth">Logout</a>
       {% else %}
         <a href="{{ url_for('login') }}" class="auth">Login</a>
-        <a href="{{ url_for('register') }}" class="auth signup">Register</a>
       {% endif %}
     </li>
   </ul>
@@ -38,7 +37,7 @@
         <div class="cart-item">
           <h3>{{ order['items'] }}</h3>
           <p>Status: {{ order['status'] }}</p>
-          <form action="{{ url_for('mark_ready', order_id=order['id']) }}" method="POST">
+          <form action="{{ url_for('cancel_order', order_id=order['id']) }}" method="POST">
             <button type="submit" class="remove-btn">Remove</button>
           </form>
         </div>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Owner Dashboard - Ekasi Online Shopping</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Orders.css') }}">
+</head>
+<body>
+
+  <header class="menu-header">
+    <h1>Owner Dashboard</h1>
+    <nav>
+      <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('owner_dashboard') }}">Dashboard</a></li>
+        <li class="auth-group">
+          <a href="{{ url_for('logout') }}" class="auth">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="orders">
+    <h2>All Orders</h2>
+
+    {% if orders %}
+      {% for order in orders %}
+        <div class="order-card {% if order['status'] == 'Pending' %}pending{% elif order['status'] == 'Ready' %}ready{% else %}completed{% endif %}">
+          <h3>Order #{{ order['id'] }}</h3>
+          <p>Customer: {{ order['name'] }} ({{ order['email'] }})</p>
+          <p>Items: {{ order['items'] }}</p>
+          <span class="status">{{ order['status'] }}</span>
+          {% if order['status'] == 'Pending' %}
+            <form action="{{ url_for('mark_ready', order_id=order['id']) }}" method="POST">
+              <button type="submit" class="reorder-btn">Mark as Ready</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No orders yet.</p>
+    {% endif %}
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Nkosana’s Kota Shop</p>
+  </footer>
+
+</body>
+</html>

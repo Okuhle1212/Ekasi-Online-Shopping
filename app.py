@@ -160,12 +160,17 @@ def cancel_order(order_id):
     )
     conn.commit()
     flash("Order cancelled.", "success")
-    return redirect(url_for("orders"))
+    return redirect(request.referrer or url_for("orders"))
 
 @app.route("/owner_dashboard")
 def owner_dashboard():
     conn = get_db()
-    orders = conn.execute("SELECT * FROM orders").fetchall()
+    orders = conn.execute("""
+        SELECT orders.*, users.name, users.email
+        FROM orders
+        JOIN users ON orders.user_id = users.id
+        ORDER BY orders.id DESC
+    """).fetchall()
     return render_template("OwnerDashboard.html", orders=orders)
 
 @app.route("/mark_ready/<int:order_id>", methods=["POST"])
