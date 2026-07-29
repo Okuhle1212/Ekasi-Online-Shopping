@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Order History - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Order History{% endblock %}
+
+{% block content %}
+  <section class="orders owner-section">
+    <h2>Order History</h2>
+
+    {% if orders %}
+      {% for entry in orders %}
+        <div class="order-card completed">
+          <h3>Order #{{ entry.order.id }}</h3>
+          <p>Customer: {{ entry.order.name }} ({{ entry.order.email }}) — {{ entry.order.phone }}</p>
+          <p class="order-date">{{ entry.order.created_at }}</p>
+          <ul class="order-items-list">
+            {% for item in entry.order_items %}
+              <li>{{ item.product_name }} x{{ item.quantity }} — R{{ '%.2f'|format(item.price * item.quantity) }}</li>
+            {% endfor %}
+          </ul>
+          <p><strong>Total: R{{ '%.2f'|format(entry.order.total) }}</strong></p>
+          {% if entry.order.notes %}
+            <p class="order-notes">Notes: {{ entry.order.notes }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-message">No completed orders yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}

@@ -1,60 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login - Ekasi Online Shopping</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='Login & Register.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-  <header class="menu-header">
-    <h1>Login</h1>
-    <nav>
-  <ul>
-    <li><a href="{{ url_for('home') }}">Home</a></li>
-    <li><a href="{{ url_for('kota') }}">Kota</a></li>
-    <li><a href="{{ url_for('chips') }}">Chips</a></li>
-    <li><a href="{{ url_for('orders') }}">Orders</a></li>
-    <li><a href="{{ url_for('cart') }}">Cart</a></li>
+{% block title %}Login - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Login{% endblock %}
 
-    <li class="auth-group">
-      {% if session.get("user_id") %}
-        <a href="{{ url_for('logout') }}" class="auth">Logout</a>
-      {% else %}
-        <a href="{{ url_for('login') }}" class="auth">Login</a>
-        <a href="{{ url_for('register') }}" class="auth signup">Register</a>
-      {% endif %}
-    </li>
-  </ul>
-</nav>
-
-  </header>
-
+{% block content %}
   <section class="auth-form">
     <h2>Welcome Back</h2>
-    <!-- Form posts to Flask /login route -->
     <form action="{{ url_for('login') }}" method="POST">
-      <label>Email</label>
-      <input type="email" name="email" placeholder="Enter your email" required>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-      <label>Password</label>
-      <input type="password" name="password" placeholder="Enter your password" required>
+      <label for="password">Password</label>
+      <div class="password-container">
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <button type="button" class="toggle-password" onclick="togglePassword('password')">Show</button>
+      </div>
 
-      <div class="remember-forgot">
-        <label>
-          <input type="checkbox" name="remember"> Remember Me
-        </label>
-        <a href="#">Forgot Password?</a>
+      <div class="remember-me">
+        <input type="checkbox" id="remember_me" name="remember_me">
+        <label for="remember_me">Remember me</label>
       </div>
 
       <button type="submit" class="login-btn">Login</button>
     </form>
-    <p>Don’t have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
   </section>
 
-  <footer>
-    <p>&copy; 2026 Nkosana’s Kota Shop</p>
-  </footer>
-
-</body>
-</html>
+  <script>
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const button = field.parentElement.querySelector('.toggle-password');
+      if (field.type === 'password') {
+        field.type = 'text';
+        button.textContent = 'Hide';
+      } else {
+        field.type = 'password';
+        button.textContent = 'Show';
+      }
+    }
+  </script>
+{% endblock %}

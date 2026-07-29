@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Success - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Payment Completed{% endblock %}
+
+{% block content %}
+  <section class="payment-result">
+    <div class="result-card success-card">
+      <h2>Payment Successful!</h2>
+      <p>Thank you for your purchase. Your order has been recorded and will appear in your orders list.</p>
+      <a href="{{ url_for('orders') }}" class="place-order-btn">View Orders</a>
+    </div>
+  </section>
+{% endblock %}

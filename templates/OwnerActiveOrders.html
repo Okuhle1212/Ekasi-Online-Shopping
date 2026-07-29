@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Active Orders - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Active Orders{% endblock %}
+
+{% block content %}
+  <section class="orders owner-section">
+    <h2>Active Orders</h2>
+
+    {% if orders %}
+      {% for entry in orders %}
+        <div class="order-card {% if entry.order.status == 'Pending' %}pending{% elif entry.order.status == 'Ready' %}ready{% else %}completed{% endif %}">
+          <h3>Order #{{ entry.order.id }}</h3>
+          <p>Customer: {{ entry.order.name }} ({{ entry.order.email }}) — {{ entry.order.phone }}</p>
+          <p class="order-date">{{ entry.order.created_at }}</p>
+          <ul class="order-items-list">
+            {% for item in entry.order_items %}
+              <li>{{ item.product_name }} x{{ item.quantity }} — R{{ '%.2f'|format(item.price * item.quantity) }}</li>
+            {% endfor %}
+          </ul>
+          <p><strong>Total: R{{ '%.2f'|format(entry.order.total) }}</strong></p>
+          {% if entry.order.notes %}
+            <p class="order-notes">Notes: {{ entry.order.notes }}</p>
+          {% endif %}
+          <span class="status">{{ entry.order.status }}</span>
+          <div class="order-actions">
+            {% if entry.order.status == 'Pending' %}
+              <form action="{{ url_for('mark_ready', order_id=entry.order.id) }}" method="POST">
+                <button type="submit" class="reorder-btn">Mark as Ready</button>
+              </form>
+            {% elif entry.order.status == 'Ready' %}
+              <form action="{{ url_for('mark_collected', order_id=entry.order.id) }}" method="POST">
+                <button type="submit" class="reorder-btn">Mark as Collected</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-message">No active orders.</p>
+    {% endif %}
+  </section>
+{% endblock %}

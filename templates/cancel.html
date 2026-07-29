@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Cancelled - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Payment Cancelled{% endblock %}
+
+{% block content %}
+  <section class="payment-result">
+    <div class="result-card cancel-card">
+      <h2>Payment Cancelled</h2>
+      <p>Your payment was not completed. You can return to the cart and try again.</p>
+      <a href="{{ url_for('cart') }}" class="place-order-btn">Return to Cart</a>
+    </div>
+  </section>
+{% endblock %}

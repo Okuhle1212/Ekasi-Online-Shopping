@@ -1,84 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Orders - Ekasi Online Shopping</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='Orders.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-  <header class="menu-header">
-    <h1>My Orders</h1>
-    <nav>
-      <ul>
-        <li><a href="{{ url_for('home') }}">Home</a></li>
-        <li><a href="{{ url_for('kota') }}">Kota</a></li>
-        <li><a href="{{ url_for('chips') }}">Chips</a></li>
-        <li><a href="{{ url_for('orders') }}">Orders</a></li>
-        <li><a href="{{ url_for('cart') }}">Cart</a></li>
-        <li class="auth-group">
-          {% if session.get("user_id") %}
-            <a href="{{ url_for('logout') }}" class="auth">Logout</a>
-          {% else %}
-            <a href="{{ url_for('login') }}" class="auth">Login</a>
-          {% endif %}
-        </li>
-      </ul>
-    </nav>
-  </header>
+{% block title %}My Orders - Ekasi Online Shopping{% endblock %}
+{% block header_title %}My Orders{% endblock %}
 
+{% block content %}
   <section class="orders">
     <h2>Active Orders</h2>
 
     {% set ns = namespace(has_active=false) %}
-    {% for order in orders %}
-      {% if order['status'] in ['Pending', 'Ready'] %}
+    {% for entry in orders %}
+      {% if entry.order.status in ['Paid', 'Ready'] %}
         {% set ns.has_active = true %}
-        <div class="order-card {% if order['status'] == 'Pending' %}pending{% else %}ready{% endif %}">
-          <h3>Order #{{ order['id'] }}</h3>
-          <p>Items: {{ order['items'] }}</p>
-          <span class="status">
-            {% if order['status'] == 'Ready' %}Ready for Collection{% else %}{{ order['status'] }}{% endif %}
-          </span>
-          {% if order['status'] == 'Pending' %}
-            <form action="{{ url_for('cancel_order', order_id=order['id']) }}" method="POST">
-              <button type="submit" class="cancel-btn">Cancel</button>
-            </form>
+        <div class="order-card {% if entry.order.status == 'Ready' %}ready{% else %}paid{% endif %}">
+          <h3>Order #{{ entry.order.id }}</h3>
+          <p class="order-date">{{ entry.order.created_at }}</p>
+          <ul class="order-items-list">
+            {% for item in entry.order_items %}
+              <li>{{ item.product_name }} x{{ item.quantity }} — R{{ '%.2f'|format(item.price * item.quantity) }}</li>
+            {% endfor %}
+          </ul>
+          <p><strong>Total: R{{ '%.2f'|format(entry.order.total) }}</strong></p>
+          {% if entry.order.notes %}
+            <p class="order-notes">Notes: {{ entry.order.notes }}</p>
           {% endif %}
+          <span class="status">
+            {% if entry.order.status == 'Ready' %}
+              Ready for Collection!
+            {% else %}
+              {{ entry.order.status }}
+            {% endif %}
+          </span>
         </div>
       {% endif %}
     {% endfor %}
     {% if not ns.has_active %}
-      <p>No active orders.</p>
+      <p class="empty-message">No active orders.</p>
     {% endif %}
 
     <h2>Previous Orders</h2>
 
-    {% set ns = namespace(has_previous=false) %}
-    {% for order in orders %}
-      {% if order['status'] not in ['Pending', 'Ready'] %}
-        {% set ns.has_previous = true %}
+    {% set ns2 = namespace(has_previous=false) %}
+    {% for entry in orders %}
+      {% if entry.order.status not in ['Paid', 'Ready', 'Pending'] %}
+        {% set ns2.has_previous = true %}
         <div class="order-card completed">
-          <h3>Order #{{ order['id'] }}</h3>
-          <p>Items: {{ order['items'] }}</p>
-          <span class="status">{{ order['status'] }}</span>
+          <h3>Order #{{ entry.order.id }}</h3>
+          <p class="order-date">{{ entry.order.created_at }}</p>
+          <ul class="order-items-list">
+            {% for item in entry.order_items %}
+              <li>{{ item.product_name }} x{{ item.quantity }}</li>
+            {% endfor %}
+          </ul>
+          <p><strong>Total: R{{ '%.2f'|format(entry.order.total) }}</strong></p>
+          <span class="status">{{ entry.order.status }}</span>
         </div>
       {% endif %}
     {% endfor %}
-    {% if not ns.has_previous %}
-      <p>No previous orders.</p>
+    {% if not ns2.has_previous %}
+      <p class="empty-message">No previous orders.</p>
     {% endif %}
   </section>
-
-  <footer>
-    <p>&copy; 2026 Nkosana’s Kota Shop</p>
-    <p>Contact: <a href="mailto:info@kotashop.com">info@kotashop.com</a></p>
-    <div class="social-links">
-      <a href="#">Facebook</a>
-      <a href="#">Instagram</a>
-      <a href="#">Twitter</a>
-    </div>
-  </footer>
-
-</body>
-</html>
+{% endblock %}

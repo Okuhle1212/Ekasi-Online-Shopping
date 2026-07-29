@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Products - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Manage Products{% endblock %}
+
+{% block content %}
+  <section class="owner-products owner-section">
+    <h2>Manage Products</h2>
+
+    <form action="{{ url_for('add_product') }}" method="POST" class="product-form add-product-form">
+      <h3>Add New Product</h3>
+      <div class="form-row">
+        <input type="text" name="name" placeholder="Product name" required>
+        <input type="number" name="price" placeholder="Price" step="0.01" min="0" required>
+        <select name="category" required>
+          <option value="home">Home</option>
+          <option value="kota">Kota</option>
+          <option value="chips">Chips</option>
+        </select>
+        <input type="text" name="image" placeholder="Image filename (e.g. kota.jpg)">
+      </div>
+      <textarea name="description" placeholder="Description" rows="2"></textarea>
+      <button type="submit" class="btn-primary">Add Product</button>
+    </form>
+
+    {% if products %}
+      <div class="product-admin-list">
+        {% for product in products %}
+          <div class="product-form product-edit-form">
+            <form action="{{ url_for('edit_product', product_id=product.id) }}" method="POST">
+              <input type="text" name="name" value="{{ product.name }}" required>
+              <input type="number" name="price" value="{{ product.price }}" step="0.01" min="0" required>
+              <select name="category" required>
+                <option value="home" {% if product.category == 'home' %}selected{% endif %}>Home</option>
+                <option value="kota" {% if product.category == 'kota' %}selected{% endif %}>Kota</option>
+                <option value="chips" {% if product.category == 'chips' %}selected{% endif %}>Chips</option>
+              </select>
+              <input type="text" name="image" value="{{ product.image }}" placeholder="Image filename">
+              <textarea name="description" rows="2">{{ product.description }}</textarea>
+              <label class="checkbox-label">
+                <input type="checkbox" name="active" {% if product.active %}checked{% endif %}>
+                Active on menu
+              </label>
+              <button type="submit" class="btn-secondary">Save</button>
+            </form>
+            {% if product.active %}
+              <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" class="inline-form">
+                <button type="submit" class="remove-btn">Remove</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

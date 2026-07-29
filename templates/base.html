@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Ekasi Online Shopping{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <header class="menu-header">
+    <h1>{% block header_title %}Ekasi Online Shopping{% endblock %}</h1>
+    <nav>
+      <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('kota') }}">Kota</a></li>
+        <li><a href="{{ url_for('chips') }}">Chips</a></li>
+        {% if session.get("user_id") %}
+          <li><a href="{{ url_for('cart') }}">Cart</a></li>
+          <li><a href="{{ url_for('orders') }}">Orders</a></li>
+          <li><a href="{{ url_for('profile') }}">Profile</a></li>
+          {% if session.get("role") == "owner" %}
+            <li><a href="{{ url_for('owner_dashboard') }}">Dashboard</a></li>
+          {% endif %}
+        {% endif %}
+        <li class="auth-group">
+          {% if session.get("user_id") %}
+            <span class="user-greeting">Hi, {{ session.get('user_name', 'User') }}</span>
+            <a href="{{ url_for('logout') }}" class="auth">Logout</a>
+          {% else %}
+            <a href="{{ url_for('login') }}" class="auth">Login</a>
+            <a href="{{ url_for('register') }}" class="auth signup">Register</a>
+          {% endif %}
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+  <footer>
+    <p>&copy; 2026 Nkosana's Kota Shop</p>
+    <p>Contact: <a href="mailto:info@kotashop.com">info@kotashop.com</a></p>
+  </footer>
+
+</body>
+</html>

@@ -167,3 +167,15 @@ footer .social-links a {
 footer .social-links a:hover {
   background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
 }
+
+.product-numbered-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-number {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}

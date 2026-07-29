@@ -1,58 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>My Cart</title>
+{% extends "base.html" %}
+
+{% block title %}My Cart - Ekasi Online Shopping{% endblock %}
+{% block extra_css %}
   <link rel="stylesheet" href="{{ url_for('static', filename='Cart.css') }}">
-</head>
-<body>
+{% endblock %}
+{% block header_title %}My Cart{% endblock %}
 
-  <header class="menu-header">
-    <h1>My Cart</h1>
-    <nav>
-  <ul>
-    <li><a href="{{ url_for('home') }}">Home</a></li>
-    <li><a href="{{ url_for('kota') }}">Kota</a></li>
-    <li><a href="{{ url_for('chips') }}">Chips</a></li>
-    <li><a href="{{ url_for('orders') }}">Orders</a></li>
-    <li><a href="{{ url_for('cart') }}">Cart</a></li>
-
-    <li class="auth-group">
-      {% if session.get("user_id") %}
-        <a href="{{ url_for('logout') }}" class="auth">Logout</a>
-      {% else %}
-        <a href="{{ url_for('login') }}" class="auth">Login</a>
-      {% endif %}
-    </li>
-  </ul>
-</nav>
-
-  </header>
-
+{% block content %}
   <section class="cart">
     <h2>Items in Your Cart</h2>
 
-    {% if orders %}
-      {% for order in orders %}
+    {% if cart_items %}
+      {% for item in cart_items %}
         <div class="cart-item">
-          <h3>{{ order['items'] }}</h3>
-          <p>Status: {{ order['status'] }}</p>
-          <form action="{{ url_for('cancel_order', order_id=order['id']) }}" method="POST">
-            <button type="submit" class="remove-btn">Remove</button>
-          </form>
+          <img
+            src="{{ url_for('static', filename='images/' ~ item.image) }}"
+            alt="{{ item.name }}"
+            onerror="this.onerror=null; this.src='/static/images/placeholder.svg';"
+          />
+          <div class="cart-item-details">
+            <h3>{{ item.name }}</h3>
+            <p>R{{ '%.2f'|format(item.price) }} each</p>
+            <p class="line-total">Line total: R{{ '%.2f'|format(item.price * item.quantity) }}</p>
+            <form action="{{ url_for('update_cart_item', cart_item_id=item.id) }}" method="POST" class="qty-form">
+              <label>Qty:</label>
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="20" required>
+              <button type="submit" class="btn-secondary">Update</button>
+            </form>
+            <form action="{{ url_for('remove_cart_item', cart_item_id=item.id) }}" method="POST">
+              <button type="submit" class="remove-btn">Remove</button>
+            </form>
+          </div>
         </div>
       {% endfor %}
+
       <div class="cart-summary">
-        <a href="{{ url_for('orders') }}" class="place-order-btn">Confirm Order</a>
+        <p class="cart-total"><strong>Total: R{{ '%.2f'|format(total) }}</strong></p>
+
+        <form action="{{ url_for('create_checkout_session') }}" method="POST" class="checkout-form">
+          <button type="submit" class="place-order-btn">Pay with Card</button>
+        </form>
       </div>
     {% else %}
-      <p>Your cart is empty.</p>
+      <p class="empty-message">Your cart is empty. <a href="{{ url_for('home') }}">Browse the menu</a></p>
     {% endif %}
   </section>
-
-  <footer>
-    <p>&copy; 2026 Nkosana’s Kota Shop</p>
-  </footer>
-
-</body>
-</html>
+{% endblock %}
