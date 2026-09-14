@@ -1,14 +1,21 @@
-<article class="product-card">
+<article class="product-card{% if product.sold_out %} sold-out{% endif %}">
   <h2>{{ product.name }}</h2>
-  <img
-    src="{{ url_for('static', filename='images/' ~ product.image) }}"
-    alt="{{ product.name }}"
-    loading="lazy"
-    onerror="this.onerror=null; this.src='/static/images/placeholder.svg';"
-  >
+  <div class="product-image-wrap">
+    <img
+      src="{{ url_for('static', filename='images/' ~ product.image) }}"
+      alt="{{ product.name }}"
+      loading="lazy"
+      onerror="this.onerror=null; this.src='/static/images/placeholder.svg';"
+    >
+    {% if product.sold_out %}
+      <span class="sold-out-badge">Sold Out</span>
+    {% endif %}
+  </div>
   <p class="price">R{{ '%.2f'|format(product.price) }}</p>
   <p class="description">{{ product.description }}</p>
-  {% if session.get("user_id") and session.get("role") != "owner" %}
+  {% if product.sold_out %}
+    <p class="sold-out-message">Currently unavailable — check back soon!</p>
+  {% elif session.get("user_id") and session.get("role") != "owner" %}
     <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label for="qty-{{ product.id }}">Qty:</label>

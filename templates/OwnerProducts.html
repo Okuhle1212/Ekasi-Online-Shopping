@@ -27,7 +27,7 @@
     {% if products %}
       <div class="product-admin-list">
         {% for product in products %}
-          <div class="product-form product-edit-form">
+          <div class="product-form product-edit-form {% if product.sold_out %}sold-out-row{% endif %}">
             <form action="{{ url_for('edit_product', product_id=product.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="text" name="name" value="{{ product.name }}" required>
@@ -43,14 +43,28 @@
                 <input type="checkbox" name="active" {% if product.active %}checked{% endif %}>
                 Active on menu
               </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="sold_out" {% if product.sold_out %}checked{% endif %}>
+                Sold out
+              </label>
               <button type="submit" class="btn-secondary">Save</button>
             </form>
-            {% if product.active %}
-              <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" class="inline-form">
+            <div class="product-form-actions">
+              <form action="{{ url_for('toggle_sold_out', product_id=product.id) }}" method="POST" class="inline-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="remove-btn">Remove</button>
+                {% if product.sold_out %}
+                  <button type="submit" class="reorder-btn">Mark Back in Stock</button>
+                {% else %}
+                  <button type="submit" class="cancel-btn">Mark Sold Out</button>
+                {% endif %}
               </form>
-            {% endif %}
+              {% if product.active %}
+                <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" class="inline-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="remove-btn">Remove</button>
+                </form>
+              {% endif %}
+            </div>
           </div>
         {% endfor %}
       </div>

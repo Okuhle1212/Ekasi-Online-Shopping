@@ -36,6 +36,9 @@ MAX_CART_QTY = 20
 # Orders that are still "in progress" from the customer's / owner's point of view.
 ACTIVE_STATUSES = ("Pending", "Paid", "Ready")
 
+# Orders that count as a completed sale for reporting purposes.
+SALE_STATUSES = ("Paid", "Ready", "Collected")
+
 DEFAULT_PRODUCTS = [
     ("Coca-cola 2L",        25.0, "Refreshing 2L Coca-Cola bottle.",                          "drink.png",        "home"),
     ("Cheese Kota",         25.0, "Fresh bread filled with melted cheese.",                    "FlyingKota1.jpg",  "kota"),
@@ -164,6 +167,18 @@ def migrate_orders_add_checkout_session_id(conn):
         print("Added checkout_session_id column to orders table")
 
 
+def migrate_products_add_sold_out(conn):
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='products'")
+    if not cursor.fetchone():
+        return
+    cursor.execute("PRAGMA table_info(products)")
+    columns = {row[1] for row in cursor.fetchall()}
+    if "sold_out" not in columns:
+        cursor.execute("ALTER TABLE products ADD COLUMN sold_out INTEGER NOT NULL DEFAULT 0")
+        print("Added sold_out column to products table")
+
+
 # ---------------------------------------------------------------------------
 # Database initialisation
 # ---------------------------------------------------------------------------
@@ -195,9 +210,12 @@ def init_db():
                 description TEXT,
                 image       TEXT DEFAULT 'placeholder.svg',
                 category    TEXT NOT NULL,
-                active      INTEGER NOT NULL DEFAULT 1
+                active      INTEGER NOT NULL DEFAULT 1,
+                sold_out    INTEGER NOT NULL DEFAULT 0
             )
         """)
+
+        migrate_products_add_sold_out(conn)
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS cart_items (
@@ -336,7 +354,7 @@ def kota():
 @app.route("/chips")
 def chips():
     with get_db() as conn:
-        products = get_products(conn, category="chips")
+        products = get_products(conn, category="chips", order_by="price ASC")
     return render_template("Chips.html", products=products)
 
 
@@ -359,10 +377,10 @@ def add_to_cart(product_id):
     quantity = parse_positive_int(request.form.get("quantity", 1))
     with get_db() as conn:
         product = conn.execute(
-            "SELECT id, name FROM products WHERE id=? AND active=1", (product_id,)
+            "SELECT id, name FROM products WHERE id=? AND active=1 AND sold_out=0", (product_id,)
         ).fetchone()
         if not product:
-            flash("Product not found.", "error")
+            flash("Product not found or currently sold out.", "error")
             return redirect(request.referrer or url_for("home"))
 
         existing = conn.execute(
@@ -772,6 +790,75 @@ def owner_order_history():
     return render_template("OwnerOrderHistory.html", orders=orders_with_items)
 
 
+@app.route("/owner/sales")
+@owner_required
+def owner_sales():
+    """
+    Sales dashboard: today / this week / this month revenue and order counts,
+    plus a top-selling products table. Counts orders that have actually been
+    paid for or fulfilled (Paid, Ready, Collected) as sales — Pending and
+    Cancelled orders are excluded so the numbers reflect real income.
+    """
+    now = datetime.now()
+    today_start = now.strftime("%Y-%m-%d 00:00:00")
+    week_start = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d 00:00:00")
+    month_start = now.strftime("%Y-%m-01 00:00:00")
+
+    status_placeholders = ",".join("?" for _ in SALE_STATUSES)
+
+    def period_stats(conn, since):
+        row = conn.execute(
+            f"""
+            SELECT COUNT(*) AS order_count, COALESCE(SUM(total), 0) AS revenue
+            FROM orders
+            WHERE status IN ({status_placeholders}) AND created_at >= ?
+            """,
+            (*SALE_STATUSES, since),
+        ).fetchone()
+        return {"order_count": row["order_count"], "revenue": row["revenue"]}
+
+    with get_db() as conn:
+        today_stats = period_stats(conn, today_start)
+        week_stats = period_stats(conn, week_start)
+        month_stats = period_stats(conn, month_start)
+
+        top_products = conn.execute(
+            f"""
+            SELECT
+                order_items.product_name AS name,
+                SUM(order_items.quantity) AS units_sold,
+                SUM(order_items.price * order_items.quantity) AS revenue
+            FROM order_items
+            JOIN orders ON order_items.order_id = orders.id
+            WHERE orders.status IN ({status_placeholders}) AND orders.created_at >= ?
+            GROUP BY order_items.product_name
+            ORDER BY units_sold DESC
+            LIMIT 8
+            """,
+            (*SALE_STATUSES, month_start),
+        ).fetchall()
+
+        recent_sales = conn.execute(
+            f"""
+            SELECT id, total, created_at, status
+            FROM orders
+            WHERE status IN ({status_placeholders})
+            ORDER BY id DESC
+            LIMIT 10
+            """,
+            SALE_STATUSES,
+        ).fetchall()
+
+    return render_template(
+        "OwnerSales.html",
+        today_stats=today_stats,
+        week_stats=week_stats,
+        month_stats=month_stats,
+        top_products=top_products,
+        recent_sales=recent_sales,
+    )
+
+
 @app.route("/mark_ready/<int:order_id>", methods=["POST"])
 @owner_required
 def mark_ready(order_id):
@@ -850,13 +937,42 @@ def edit_product(product_id):
         return redirect(url_for("owner_products"))
 
     active = 1 if request.form.get("active") == "on" else 0
+    sold_out = 1 if request.form.get("sold_out") == "on" else 0
 
     with get_db() as conn:
         conn.execute(
-            "UPDATE products SET name=?, price=?, description=?, image=?, category=?, active=? WHERE id=?",
-            (data["name"], data["price"], data["description"], data["image"], data["category"], active, product_id),
+            "UPDATE products SET name=?, price=?, description=?, image=?, category=?, active=?, sold_out=? WHERE id=?",
+            (data["name"], data["price"], data["description"], data["image"], data["category"], active, sold_out, product_id),
         )
     flash(f"Product '{data['name']}' updated.", "success")
+    return redirect(url_for("owner_products"))
+
+
+@app.route("/owner/products/toggle_sold_out/<int:product_id>", methods=["POST"])
+@owner_required
+def toggle_sold_out(product_id):
+    """
+    Quick one-click toggle for the owner to mark an item as sold out /
+    back in stock without opening the full edit form. Product stays
+    active on the menu, just shown as unavailable to order.
+    """
+    with get_db() as conn:
+        product = conn.execute(
+            "SELECT name, sold_out FROM products WHERE id=?", (product_id,)
+        ).fetchone()
+        if not product:
+            flash("Product not found.", "error")
+            return redirect(url_for("owner_products"))
+
+        new_state = 0 if product["sold_out"] else 1
+        conn.execute(
+            "UPDATE products SET sold_out=? WHERE id=?", (new_state, product_id)
+        )
+
+    if new_state:
+        flash(f"{product['name']} marked as sold out.", "success")
+    else:
+        flash(f"{product['name']} marked as back in stock.", "success")
     return redirect(url_for("owner_products"))
 
 

@@ -200,6 +200,35 @@ nav a:hover {
   flex-direction: column;
 }
 
+.product-card.sold-out {
+  opacity: 0.75;
+  border-color: #999;
+}
+
+.product-image-wrap {
+  position: relative;
+}
+
+.sold-out-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #666;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.sold-out-message {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #666;
+  margin-top: 10px;
+}
+
 .product-card img {
   max-width: 100%;
   width: 100%;
@@ -620,6 +649,12 @@ nav a:hover {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.product-edit-form.sold-out-row {
+  background: #f7f7f7;
+  border-color: #999;
 }
 
 .inline-form {
@@ -666,6 +701,77 @@ nav a:hover {
 
 .cancel-card h2 {
   color: var(--primary-color);
+}
+
+/* Sales dashboard */
+.sales-dashboard h3 {
+  color: var(--primary-color);
+  margin-top: 30px;
+}
+
+.sales-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.sales-summary-card {
+  background: white;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sales-summary-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #666;
+  font-weight: bold;
+}
+
+.sales-summary-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.sales-summary-sub {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.sales-table th,
+.sales-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.sales-table th {
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.sales-table tr:last-child td {
+  border-bottom: none;
 }
 
 footer {

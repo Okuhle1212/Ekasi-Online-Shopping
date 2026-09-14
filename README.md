@@ -1,6 +1,6 @@
 # Ekasi Online Shopping
 
-Online ordering app for Nkosana's Kota Shop — browse the menu, add items to your cart, and place orders from your phone or computer.
+Online ordering app for local township food vendors — browse the menu, add items to your cart, and place orders from your phone or computer.
 
 ## Features
 
@@ -15,7 +15,8 @@ Online ordering app for Nkosana's Kota Shop — browse the menu, add items to yo
   cancel an order while it's still awaiting prep
 - Owner dashboard with live order counts, active order management, and
   order history (including cancelled orders)
-- Owner product management (add, edit, deactivate items)
+- Owner sales dashboard with daily/weekly/monthly revenue and top-selling products
+- Owner product management (add, edit, deactivate items, mark sold out)
 - CSRF protection on all forms
 - Mobile-friendly layout
 

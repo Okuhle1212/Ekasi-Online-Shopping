@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Sales Dashboard - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Sales Dashboard{% endblock %}
+
+{% block content %}
+  <section class="sales-dashboard owner-section">
+    <h2>Sales Dashboard</h2>
+
+    <div class="sales-summary-grid">
+      <div class="sales-summary-card">
+        <span class="sales-summary-label">Today</span>
+        <span class="sales-summary-value">R{{ '%.2f'|format(today_stats.revenue) }}</span>
+        <span class="sales-summary-sub">{{ today_stats.order_count }} order{{ '' if today_stats.order_count == 1 else 's' }}</span>
+      </div>
+      <div class="sales-summary-card">
+        <span class="sales-summary-label">This Week</span>
+        <span class="sales-summary-value">R{{ '%.2f'|format(week_stats.revenue) }}</span>
+        <span class="sales-summary-sub">{{ week_stats.order_count }} order{{ '' if week_stats.order_count == 1 else 's' }}</span>
+      </div>
+      <div class="sales-summary-card">
+        <span class="sales-summary-label">This Month</span>
+        <span class="sales-summary-value">R{{ '%.2f'|format(month_stats.revenue) }}</span>
+        <span class="sales-summary-sub">{{ month_stats.order_count }} order{{ '' if month_stats.order_count == 1 else 's' }}</span>
+      </div>
+    </div>
+
+    <h3>Top Products This Month</h3>
+    {% if top_products %}
+      <table class="sales-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Units Sold</th>
+            <th>Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in top_products %}
+            <tr>
+              <td>{{ product.name }}</td>
+              <td>{{ product.units_sold }}</td>
+              <td>R{{ '%.2f'|format(product.revenue) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-message">No sales recorded yet this month.</p>
+    {% endif %}
+
+    <h3>Recent Sales</h3>
+    {% if recent_sales %}
+      <table class="sales-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sale in recent_sales %}
+            <tr>
+              <td>#{{ sale.id }}</td>
+              <td>{{ sale.created_at }}</td>
+              <td>{{ sale.status }}</td>
+              <td>R{{ '%.2f'|format(sale.total) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-message">No sales recorded yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}
