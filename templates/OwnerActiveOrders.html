@@ -9,7 +9,7 @@
 
     {% if orders %}
       {% for entry in orders %}
-        <div class="order-card {% if entry.order.status == 'Pending' %}pending{% elif entry.order.status == 'Ready' %}ready{% else %}completed{% endif %}">
+        <div class="order-card {% if entry.order.status == 'Ready' %}ready{% elif entry.order.status in ['Pending','Paid'] %}pending{% else %}completed{% endif %}">
           <h3>Order #{{ entry.order.id }}</h3>
           <p>Customer: {{ entry.order.name }} ({{ entry.order.email }}) — {{ entry.order.phone }}</p>
           <p class="order-date">{{ entry.order.created_at }}</p>
@@ -22,14 +22,19 @@
           {% if entry.order.notes %}
             <p class="order-notes">Notes: {{ entry.order.notes }}</p>
           {% endif %}
-          <span class="status">{{ entry.order.status }}</span>
+          <span class="status">
+            {{ entry.order.status }}
+            {% if entry.order.status == 'Pending' %}(pay on collection){% elif entry.order.status == 'Paid' %}(paid by card){% endif %}
+          </span>
           <div class="order-actions">
-            {% if entry.order.status == 'Pending' %}
+            {% if entry.order.status in ['Pending', 'Paid'] %}
               <form action="{{ url_for('mark_ready', order_id=entry.order.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="reorder-btn">Mark as Ready</button>
               </form>
             {% elif entry.order.status == 'Ready' %}
               <form action="{{ url_for('mark_collected', order_id=entry.order.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="reorder-btn">Mark as Collected</button>
               </form>
             {% endif %}

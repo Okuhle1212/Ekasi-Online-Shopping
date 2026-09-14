@@ -8,6 +8,7 @@
     <h2>Manage Products</h2>
 
     <form action="{{ url_for('add_product') }}" method="POST" class="product-form add-product-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <h3>Add New Product</h3>
       <div class="form-row">
         <input type="text" name="name" placeholder="Product name" required>
@@ -28,6 +29,7 @@
         {% for product in products %}
           <div class="product-form product-edit-form">
             <form action="{{ url_for('edit_product', product_id=product.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="text" name="name" value="{{ product.name }}" required>
               <input type="number" name="price" value="{{ product.price }}" step="0.01" min="0" required>
               <select name="category" required>
@@ -45,6 +47,7 @@
             </form>
             {% if product.active %}
               <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="remove-btn">Remove</button>
               </form>
             {% endif %}

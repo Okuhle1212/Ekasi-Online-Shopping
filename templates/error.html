@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ code }} - Ekasi Online Shopping{% endblock %}
+{% block header_title %}Oops{% endblock %}
+
+{% block content %}
+  <section class="payment-result">
+    <div class="result-card cancel-card">
+      <h2>{{ code }}</h2>
+      <p>{{ message }}</p>
+      <a href="{{ url_for('home') }}" class="place-order-btn">Back to Home</a>
+    </div>
+  </section>
+{% endblock %}

@@ -10,7 +10,7 @@
     <nav class="owner-nav">
       <ul>
         <li><a href="{{ url_for('owner_products') }}">Manage Products</a></li>
-        <li><a href="{{ url_for('owner_active_orders') }}">Active Orders</a></li>
+        <li><a href="{{ url_for('owner_active_orders') }}">Active Orders {% if pending_count or ready_count %}({{ pending_count + ready_count }}){% endif %}</a></li>
         <li><a href="{{ url_for('owner_order_history') }}">Order History</a></li>
       </ul>
     </nav>

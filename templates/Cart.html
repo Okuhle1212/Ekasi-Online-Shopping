@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 
 {% block title %}My Cart - Ekasi Online Shopping{% endblock %}
-{% block extra_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='Cart.css') }}">
-{% endblock %}
 {% block header_title %}My Cart{% endblock %}
 
 {% block content %}
@@ -16,6 +13,7 @@
           <img
             src="{{ url_for('static', filename='images/' ~ item.image) }}"
             alt="{{ item.name }}"
+            loading="lazy"
             onerror="this.onerror=null; this.src='/static/images/placeholder.svg';"
           />
           <div class="cart-item-details">
@@ -23,11 +21,13 @@
             <p>R{{ '%.2f'|format(item.price) }} each</p>
             <p class="line-total">Line total: R{{ '%.2f'|format(item.price * item.quantity) }}</p>
             <form action="{{ url_for('update_cart_item', cart_item_id=item.id) }}" method="POST" class="qty-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <label>Qty:</label>
               <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="20" required>
               <button type="submit" class="btn-secondary">Update</button>
             </form>
             <form action="{{ url_for('remove_cart_item', cart_item_id=item.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button type="submit" class="remove-btn">Remove</button>
             </form>
           </div>
@@ -37,9 +37,21 @@
       <div class="cart-summary">
         <p class="cart-total"><strong>Total: R{{ '%.2f'|format(total) }}</strong></p>
 
-        <form action="{{ url_for('create_checkout_session') }}" method="POST" class="checkout-form">
-          <button type="submit" class="place-order-btn">Pay with Card</button>
-        </form>
+        <div class="checkout-options">
+          <form action="{{ url_for('create_checkout_session') }}" method="POST" class="checkout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="notes-card">Notes for the shop (optional)</label>
+            <textarea id="notes-card" name="notes" rows="2" maxlength="500" placeholder="e.g. extra sauce, no onions..."></textarea>
+            <button type="submit" class="place-order-btn">Pay with Card</button>
+          </form>
+
+          <form action="{{ url_for('checkout') }}" method="POST" class="checkout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="notes-cash">Notes for the shop (optional)</label>
+            <textarea id="notes-cash" name="notes" rows="2" maxlength="500" placeholder="e.g. extra sauce, no onions..."></textarea>
+            <button type="submit" class="btn-secondary">Pay on Collection</button>
+          </form>
+        </div>
       </div>
     {% else %}
       <p class="empty-message">Your cart is empty. <a href="{{ url_for('home') }}">Browse the menu</a></p>

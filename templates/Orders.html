@@ -9,9 +9,9 @@
 
     {% set ns = namespace(has_active=false) %}
     {% for entry in orders %}
-      {% if entry.order.status in ['Paid', 'Ready'] %}
+      {% if entry.order.status in ['Pending', 'Paid', 'Ready'] %}
         {% set ns.has_active = true %}
-        <div class="order-card {% if entry.order.status == 'Ready' %}ready{% else %}paid{% endif %}">
+        <div class="order-card {% if entry.order.status == 'Ready' %}ready{% else %}pending{% endif %}">
           <h3>Order #{{ entry.order.id }}</h3>
           <p class="order-date">{{ entry.order.created_at }}</p>
           <ul class="order-items-list">
@@ -26,10 +26,18 @@
           <span class="status">
             {% if entry.order.status == 'Ready' %}
               Ready for Collection!
+            {% elif entry.order.status == 'Pending' %}
+              Pending — pay on collection
             {% else %}
-              {{ entry.order.status }}
+              Paid — being prepared
             {% endif %}
           </span>
+          {% if entry.order.status == 'Pending' %}
+            <form action="{{ url_for('cancel_order', order_id=entry.order.id) }}" method="POST" class="inline-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="cancel-btn">Cancel Order</button>
+            </form>
+          {% endif %}
         </div>
       {% endif %}
     {% endfor %}
@@ -41,7 +49,7 @@
 
     {% set ns2 = namespace(has_previous=false) %}
     {% for entry in orders %}
-      {% if entry.order.status not in ['Paid', 'Ready', 'Pending'] %}
+      {% if entry.order.status not in ['Pending', 'Paid', 'Ready'] %}
         {% set ns2.has_previous = true %}
         <div class="order-card completed">
           <h3>Order #{{ entry.order.id }}</h3>

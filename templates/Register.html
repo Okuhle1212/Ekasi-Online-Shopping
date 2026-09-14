@@ -7,6 +7,7 @@
   <section class="auth-form">
     <h2>Create Account</h2>
     <form action="{{ url_for('register') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
@@ -18,7 +19,7 @@
 
       <label for="password">Password</label>
       <div class="password-container">
-        <input type="password" id="password" name="password" placeholder="Create a password" required>
+        <input type="password" id="password" name="password" placeholder="Create a password (min. 6 characters)" minlength="6" required>
         <button type="button" class="toggle-password" onclick="togglePassword('password')">Show</button>
       </div>
 

@@ -5,7 +5,7 @@
 {% block content %}
   <section class="search-bar">
     <form action="{{ url_for('home') }}" method="GET" class="search-form">
-      <input type="text" name="q" value="{{ search }}" placeholder="Search products...">
+      <input type="text" name="q" value="{{ search }}" placeholder="Search all products...">
       <button type="submit">Search</button>
       {% if search %}
         <a href="{{ url_for('home') }}" class="clear-search">Clear</a>
@@ -18,6 +18,8 @@
       {% for product in products %}
         {% include "partials/product_card.html" %}
       {% endfor %}
+    {% elif search %}
+      <p class="empty-message">No products matched "{{ search }}".</p>
     {% else %}
       <p class="empty-message">No products found.</p>
     {% endif %}

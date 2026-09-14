@@ -22,6 +22,7 @@
           {% if entry.order.notes %}
             <p class="order-notes">Notes: {{ entry.order.notes }}</p>
           {% endif %}
+          <span class="status">{{ entry.order.status }}</span>
         </div>
       {% endfor %}
     {% else %}
