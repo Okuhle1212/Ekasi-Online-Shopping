@@ -27,7 +27,10 @@ STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 stripe.api_key = STRIPE_SECRET_KEY
 
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "owner@kotashop.com")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+# No default password: the owner account is only created when ADMIN_PASSWORD is set,
+# so a fresh deployment can never start with a publicly known login.
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+WEAK_ADMIN_PASSWORDS = {"admin123", "change-this-password", "password", "12345678"}
 DATABASE = os.environ.get("DATABASE_PATH", "database.db")
 
 VALID_CATEGORIES = {"home", "kota", "chips"}
@@ -264,12 +267,19 @@ def init_db():
 
         cursor.execute("SELECT * FROM users WHERE email=?", (ADMIN_EMAIL,))
         if not cursor.fetchone():
-            hashed_pw = generate_password_hash(ADMIN_PASSWORD)
-            cursor.execute(
-                "INSERT INTO users (name, email, phone, password, role) VALUES (?,?,?,?,?)",
-                ("Shop Owner", ADMIN_EMAIL, "0000000000", hashed_pw, "owner"),
-            )
-            print(f"Default owner account created: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")
+            if not ADMIN_PASSWORD:
+                print("WARNING: ADMIN_PASSWORD is not set - owner account was NOT created. "
+                      "Set ADMIN_PASSWORD (min 8 characters) and restart.")
+            elif len(ADMIN_PASSWORD) < 8 or ADMIN_PASSWORD.lower() in WEAK_ADMIN_PASSWORDS:
+                print("WARNING: ADMIN_PASSWORD is too weak or a known default - owner account "
+                      "was NOT created. Use at least 8 characters and avoid common passwords.")
+            else:
+                hashed_pw = generate_password_hash(ADMIN_PASSWORD)
+                cursor.execute(
+                    "INSERT INTO users (name, email, phone, password, role) VALUES (?,?,?,?,?)",
+                    ("Shop Owner", ADMIN_EMAIL, "0000000000", hashed_pw, "owner"),
+                )
+                print(f"Owner account created for {ADMIN_EMAIL}")
 
 
 # ---------------------------------------------------------------------------

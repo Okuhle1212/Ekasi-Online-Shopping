@@ -64,12 +64,15 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 ### Default owner account
 
-On first run, an owner account is created automatically:
+The owner account is created on first run, **only if `ADMIN_PASSWORD` is set**
+(at least 8 characters, not a common default). There is no built-in password.
 
 - Email: `owner@kotashop.com` (or your `ADMIN_EMAIL`)
-- Password: `admin123` (or your `ADMIN_PASSWORD`)
+- Password: whatever you set in `ADMIN_PASSWORD`
 
-**Change this password after first login** (Profile → Change Password).
+Set it in your `.env` file locally, or in your host's environment variables when
+deploying. Never commit it to GitHub. You can change it later from
+Profile → Change Password.
 
 ## Product images
 
